@@ -4,6 +4,7 @@ from tf_unet.image_util import BaseDataProvider
 import glob
 import numpy as np
 from PIL import Image
+import tensorflow as tf
 
 
 class EyeDataProvider(BaseDataProvider):
@@ -69,6 +70,9 @@ class EyeDataProvider(BaseDataProvider):
         label_name = self._from_image_to_label_name(image_name)
 
         img = self._load_file(image_name, np.float32)
+        new_shape = (int(img.shape[0] / 4), int(img.shape[1] / 4))
+        img = np.resize(img, new_shape)
+        img = tf.random_crop(img, [112, 112, self.channels])
         label = self._load_file(label_name, np.uint8)
         label = self._convert_label_to_onehot(label)
 
