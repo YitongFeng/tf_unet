@@ -73,12 +73,17 @@ class EyeDataProvider(BaseDataProvider):
         new_shape = (int(img.shape[0] / 4), int(img.shape[1] / 4))
         img = np.resize(img, new_shape)
         img = tf.random_crop(img, [112, 112, self.channels])
+
         label = self._load_file(label_name, np.uint8)
+
         if self.n_class > 2:
             label = self._convert_label_to_onehot(label)
         else:
             label = (label == 255)
 
+        label = np.resize(img, new_shape)
+        label_channels = 1 if len(label.shape) == 2 else label.shape[-1]
+        label = tf.random_crop(label, [112, 112, label_channels])
 
         return img, label
 
